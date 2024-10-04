@@ -1,21 +1,45 @@
 import { AT_LEAST_2_NUM, AT_LEAST_8_CHAR, IS_NOT_EMPTY, IS_NOT_STRING } from "./message.error";
+import { ValidationResponse } from "./validation-response";
 
+const rules = {
+    isNotString: (input: string, v: ValidationResponse) => {
+        if (input === '') {
+            v.errorMessage.push(IS_NOT_EMPTY);
+        }
+        return v;
+    }
+}
 
-export function passwordValidation(input: string) {
+// no side effect
+
+export function passwordValidation(input: string, validationRules = []): ValidationResponse {
+
+    // validationRules.forEach(ruleName => {
+    //     rules(ruleName);
+    // });
+
+    const result = new ValidationResponse();
     if (typeof input !== 'string') {
-        throw Error(IS_NOT_STRING);
+        throw new Error(IS_NOT_STRING);
     }
 
     if (input === '') {
-        throw Error(IS_NOT_EMPTY);
+        result.errorMessage.push(IS_NOT_EMPTY);
     }
 
     if (input.length < 8) {
-        throw Error(AT_LEAST_8_CHAR);
+        result.errorMessage.push(AT_LEAST_8_CHAR);
     }
 
     const regexAtLeast2Num = /\d{2,}/g;
     if (!regexAtLeast2Num.test(input)) {
-        throw Error(AT_LEAST_2_NUM);
+        result.errorMessage.push(AT_LEAST_2_NUM);
     }
+
+    return result;
+}
+
+
+function main() {
+    // passwordValidation('test134', ['isNotString']);
 }
